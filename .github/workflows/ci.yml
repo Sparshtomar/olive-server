@@ -1,0 +1,75 @@
+# Every gate a change must pass. The same commands run locally via `npm run check`.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Format, lint, types, dead code
+    runs-on: ubuntu-latest
+    steps:
+      # Actions are pinned to commit SHAs so a moved tag can't change what runs.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      # Also builds packages/shared (prepare script), which the API and the type checker consume.
+      - run: npm ci
+      - run: npm run format:check
+      # Includes the architecture rules: layer boundaries, module public APIs, no import cycles.
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run knip
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: olive
+          POSTGRES_PASSWORD: olive
+          POSTGRES_DB: olive_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U olive"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # API tests run against a real Postgres with a fake AI provider.
+      TEST_DATABASE_URL: postgres://olive:olive@localhost:5432/olive_test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # What would be published, so a broken package shows up here rather than after a release.
+      - run: npm pack --dry-run -w @sparshtomar/olive-shared
