@@ -1,0 +1,48 @@
+{
+  "name": "@sparshtomar/olive-shared",
+  "version": "0.1.0",
+  "description": "Olive's domain contract: Zod schemas, nutrition math and the lab-marker catalog, shared by the API and the app.",
+  "license": "MIT",
+  "author": "Sparsh Tomar",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sparshtomar/olive-server.git",
+    "directory": "packages/shared"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.3",
+    "tsup": "^8.5.1"
+  }
+}
