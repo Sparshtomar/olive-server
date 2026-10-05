@@ -1,0 +1,21 @@
+# Render blueprint for the API. Postgres lives on Neon (DATABASE_URL), secrets are set in the dashboard.
+services:
+  - type: web
+    name: olive-server
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: AI_PROVIDER
+        value: gemini
+      - key: NODE_VERSION
+        value: '22'
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false

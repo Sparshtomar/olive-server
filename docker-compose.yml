@@ -1,0 +1,15 @@
+# Local Postgres for development and tests. Mapped to 5433 so it doesn't clash with a Homebrew Postgres on 5432.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: olive
+      POSTGRES_PASSWORD: olive
+      POSTGRES_DB: olive
+    ports:
+      - '5433:5432'
+    volumes:
+      - olive-db:/var/lib/postgresql/data
+      - ./docker/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+volumes:
+  olive-db:
