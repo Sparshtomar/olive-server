@@ -1,0 +1,2 @@
+# Repo-wide checks lint-staged can't do on single files: types across packages and dead code.
+npm run typecheck && npm run knip

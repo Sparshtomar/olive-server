@@ -1,0 +1,2 @@
+# Fast: lint and format only what's staged.
+npx lint-staged

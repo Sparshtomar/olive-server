@@ -1,0 +1,18 @@
+// Dead-code check: unused files, exports and dependencies fail CI instead of piling up.
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  // An export used inside its own file is a deliberate unit (e.g. each insight rule), not dead code.
+  "ignoreExportsUsedInFile": true,
+  "workspaces": {
+    ".": {
+      "entry": ["src/server.ts", "src/db/migrate.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"],
+      // Loaded by name as a pino transport in development, so there's no import to find.
+      "ignoreDependencies": ["pino-pretty"],
+    },
+    "packages/shared": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"],
+    },
+  },
+}
