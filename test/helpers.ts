@@ -9,7 +9,7 @@ import {
   type ProfileInput,
   type ReportDraft,
 } from '@sparshtomar/olive-shared';
-import type { AiServices, MealInput } from '../src/ai';
+import type { AiServices, AssistantInput, MealInput } from '../src/ai';
 import { buildApp } from '../src/app';
 import { createContainer } from '../src/container';
 import { createDb } from '../src/db/client';
@@ -51,6 +51,8 @@ export class FakeAi implements AiServices {
   mealDraft: MealDraft = { isFood: true, title: 'Dal', items: [item()] };
   reportDraft: ReportDraft = { isLabReport: true, labName: 'Lab', reportDate: '2026-09-01', markers: [] };
   lastMealInput?: MealInput;
+  assistantReply = 'Here is what I can see in your data.';
+  lastAssistantInput?: AssistantInput;
 
   mealAnalyzer = {
     analyze: async (input: MealInput) => {
@@ -59,6 +61,12 @@ export class FakeAi implements AiServices {
     },
   };
   reportExtractor = { extract: async () => this.reportDraft };
+  healthAssistant = {
+    reply: async (input: AssistantInput) => {
+      this.lastAssistantInput = input;
+      return this.assistantReply;
+    },
+  };
 }
 
 export interface TestContext {

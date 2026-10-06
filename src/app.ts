@@ -9,6 +9,7 @@ import { jsonSchemaTransform, serializerCompiler, validatorCompiler } from 'fast
 import type { Redis } from 'ioredis';
 import { USER_ID_HEADER } from '@sparshtomar/olive-shared';
 import type { Container } from './container';
+import { chatAttachmentRoutes, chatRoutes } from './modules/chat';
 import { demoRoutes } from './modules/demo';
 import { mealPhotoRoutes, mealRoutes } from './modules/meals';
 import { progressRoutes } from './modules/progress';
@@ -88,10 +89,11 @@ export const buildApp = async ({ container, corsOrigin, logger, rateLimit: limit
     }
   });
 
-  const { users, meals, reports, progress, demo } = container;
+  const { users, meals, reports, progress, demo, chat } = container;
   await app.register(publicUserRoutes, { users });
   await app.register(demoRoutes, { demo });
   await app.register(mealPhotoRoutes, { meals });
+  await app.register(chatAttachmentRoutes, { chat });
 
   // Everything below requires a known user.
   await app.register(async (authed) => {
@@ -100,6 +102,7 @@ export const buildApp = async ({ container, corsOrigin, logger, rateLimit: limit
     await authed.register(mealRoutes, { meals });
     await authed.register(reportRoutes, { reports });
     await authed.register(progressRoutes, { progress });
+    await authed.register(chatRoutes, { chat });
   });
 
   return app;

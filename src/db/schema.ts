@@ -15,6 +15,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import {
   ACTIVITY_LEVELS,
+  CHAT_ROLES,
   CONFIDENCE_LEVELS,
   GOAL_TYPES,
   MEAL_SLOTS,
@@ -31,6 +32,7 @@ export const mealSlotEnum = pgEnum('meal_slot', MEAL_SLOTS);
 export const mealSourceEnum = pgEnum('meal_source', MEAL_SOURCES);
 export const confidenceEnum = pgEnum('confidence', CONFIDENCE_LEVELS);
 export const markerStatusEnum = pgEnum('marker_status', ['low', 'normal', 'high']);
+export const chatRoleEnum = pgEnum('chat_role', CHAT_ROLES);
 
 const timestamps = {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -147,6 +149,43 @@ export const reportMarkers = pgTable(
   },
   (t) => [index('report_markers_report_idx').on(t.reportId), index('report_markers_key_idx').on(t.markerKey)],
 );
+
+export const chatConversations = pgTable(
+  'chat_conversations',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    ...timestamps,
+  },
+  (t) => [index('chat_conversations_user_updated_idx').on(t.userId, t.updatedAt)],
+);
+
+export const chatMessages = pgTable(
+  'chat_messages',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    conversationId: uuid('conversation_id')
+      .notNull()
+      .references(() => chatConversations.id, { onDelete: 'cascade' }),
+    role: chatRoleEnum('role').notNull(),
+    content: text('content').notNull(),
+    hasImage: boolean('has_image').notNull().default(false),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('chat_messages_conversation_created_idx').on(t.conversationId, t.createdAt)],
+);
+
+/** Attached images live apart from messages so loading a thread never drags image bytes along. */
+export const chatAttachments = pgTable('chat_attachments', {
+  messageId: uuid('message_id')
+    .primaryKey()
+    .references(() => chatMessages.id, { onDelete: 'cascade' }),
+  mimeType: text('mime_type').notNull(),
+  data: bytea('data').notNull(),
+});
 
 export const mealsRelations = relations(meals, ({ many }) => ({
   items: many(mealItems),

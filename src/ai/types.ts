@@ -23,7 +23,27 @@ export interface ReportExtractor {
   extract(file: BinaryInput): Promise<ReportDraft>;
 }
 
+export interface AssistantTurn {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface AssistantInput {
+  /** Everything the assistant may ground its answer in: profile, targets, today's meals, lab markers. Plain text. */
+  context: string;
+  /** Earlier turns of this conversation, oldest first. */
+  history: AssistantTurn[];
+  text: string;
+  image?: BinaryInput;
+}
+
+/** Answers a health question in Olive's voice, grounded in the user's own data. Returns plain prose. */
+export interface HealthAssistant {
+  reply(input: AssistantInput): Promise<string>;
+}
+
 export interface AiServices {
   mealAnalyzer: MealAnalyzer;
   reportExtractor: ReportExtractor;
+  healthAssistant: HealthAssistant;
 }
