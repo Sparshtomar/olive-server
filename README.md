@@ -107,7 +107,12 @@ Tests use `TEST_DATABASE_URL` (default `postgres://olive:olive@localhost:5432/ol
 
 ## AI model choice
 
-**Gemini Flash** (free tier via Google AI Studio): one model handles images, audio and PDFs natively, supports JSON-schema structured output, and has the highest free limits among multimodal models. Groq was the alternative (faster) but needs separate vision and speech models and can't read PDFs directly.
+Two providers behind one port (`MealAnalyzer`, `ReportExtractor`, `HealthAssistant` in `src/ai/types.ts`); `AI_PROVIDER` picks one, `mock` runs without a key.
+
+- **Gemini Flash** (AI Studio): one model handles images, audio and PDFs natively with JSON-schema output. The first choice when a key is available.
+- **Groq** (free tier, no card): `qwen3.8-27b` reads images and returns JSON, Whisper transcribes voice notes, and digital PDFs are reduced to their text layer on the server first (`unpdf`); scanned PDFs get a clear "photograph the pages" message. Shipped because the Gemini project behind this app was suspended two days before submission — see [ADR 0008](docs/adr/0008-second-ai-provider.md).
+
+Both clients fall through an ordered model list on rate limits, outages, timeouts and schema-invalid answers, and the model's output is clamped and validated before anyone sees it.
 
 ## What I'd do next
 

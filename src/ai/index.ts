@@ -4,6 +4,9 @@ import type { Env } from '../config/env';
 import { GeminiMealAnalyzer, GeminiReportExtractor } from './gemini/gemini-analyzers';
 import { GeminiHealthAssistant } from './gemini/gemini-assistant';
 import { GeminiStructuredClient } from './gemini/structured-client';
+import { GroqMealAnalyzer, GroqReportExtractor } from './groq/groq-analyzers';
+import { GroqHealthAssistant } from './groq/groq-assistant';
+import { GroqClient } from './groq/groq-client';
 import { MockMealAnalyzer, MockReportExtractor } from './mock/mock-analyzers';
 import { MockHealthAssistant } from './mock/mock-assistant';
 import type { AiServices } from './types';
@@ -26,6 +29,14 @@ export const createAiServices = (env: Env, log: FastifyBaseLogger): AiServices =
       mealAnalyzer: new MockMealAnalyzer(),
       reportExtractor: new MockReportExtractor(),
       healthAssistant: new MockHealthAssistant(),
+    };
+  }
+  if (env.AI_PROVIDER === 'groq') {
+    const client = new GroqClient(env.GROQ_API_KEY!, env.GROQ_MODELS, log.child({ module: 'ai' }));
+    return {
+      mealAnalyzer: new GroqMealAnalyzer(client),
+      reportExtractor: new GroqReportExtractor(client),
+      healthAssistant: new GroqHealthAssistant(client),
     };
   }
   // Keys from AI Studio start with "AIza" and use the Gemini Developer API; keys from

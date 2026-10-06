@@ -13,6 +13,7 @@ the **trigger** that would make us revisit it. A decision without a trigger is d
 | 0005 | [One Postgres; no cache, no replica](0005-one-postgres.md)                   | Accepted |
 | 0006 | [Redis is optional, and only for rate limiting](0006-optional-redis.md)      | Accepted |
 | 0007 | [The assistant answers from the user's own data](0007-grounded-assistant.md) | Accepted |
+| 0008 | [A second AI provider behind the same port](0008-second-ai-provider.md)      | Accepted |
 
 Format: [Michael Nygard's](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions),
 kept short. New decisions get the next number; superseded ones stay and point forward.

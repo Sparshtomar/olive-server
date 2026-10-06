@@ -12,10 +12,12 @@ services:
       - key: NODE_ENV
         value: production
       - key: AI_PROVIDER
-        value: gemini
+        value: groq
       - key: NODE_VERSION
         value: '22'
       - key: DATABASE_URL
         sync: false
       - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
         sync: false
