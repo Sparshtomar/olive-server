@@ -1,4 +1,4 @@
-# 0005 — One Postgres; no cache, no read replica
+# 0005 - One Postgres; no cache, no read replica
 
 **Status:** Accepted
 

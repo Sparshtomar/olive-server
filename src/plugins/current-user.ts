@@ -16,7 +16,7 @@ const uuid = z.uuid();
 /**
  * Identifies the caller. Olive has no login (out of scope), so the device keeps the
  * user id it got at onboarding and sends it in a header. This plugin is the single
- * seam where real auth (e.g. a JWT verifier) would replace the header lookup —
+ * seam where real auth (e.g. a JWT verifier) would replace the header lookup -
  * routes only ever read `request.user`.
  */
 export const currentUser = fp<{ users: UserService }>(async (app: FastifyInstance, { users }) => {

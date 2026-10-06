@@ -29,7 +29,7 @@ const itemColumns = (mealId: string, items: FoodItem[]) =>
     ...item.nutrients,
   }));
 
-/** sum(nutrient × quantity) — items store nutrients for one portion. */
+/** sum(nutrient × quantity) - items store nutrients for one portion. */
 const total = (column: AnyPgColumn) => sql<number>`coalesce(sum(${column} * ${mealItems.quantity}), 0)`.mapWith(Number);
 
 export class MealRepository {
@@ -37,7 +37,7 @@ export class MealRepository {
 
   /**
    * Creates a meal with its items (and optional photo) atomically. If a meal with the
-   * same device `clientId` already exists, returns it instead — retries and double taps
+   * same device `clientId` already exists, returns it instead - retries and double taps
    * never create duplicates.
    */
   async create(
@@ -132,7 +132,7 @@ export class MealRepository {
     });
   }
 
-  /** Nutrient totals per day and meal slot — the raw material for trends and insights. */
+  /** Nutrient totals per day and meal slot - the raw material for trends and insights. */
   async slotTotals(userId: string, from: string, to: string): Promise<SlotTotals[]> {
     return this.db
       .select({

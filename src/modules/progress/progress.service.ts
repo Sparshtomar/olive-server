@@ -72,7 +72,7 @@ const withProgress = (focus: NutritionFocus[], totals: Nutrients): FocusProgress
 
 /**
  * Consecutive logged days ending today. If today has nothing yet the streak isn't
- * broken — the day isn't over — so counting starts from yesterday.
+ * broken - the day isn't over - so counting starts from yesterday.
  */
 export const streakEndingAt = (today: DateKey, loggedDatesDesc: DateKey[]): number => {
   const logged = new Set(loggedDatesDesc);

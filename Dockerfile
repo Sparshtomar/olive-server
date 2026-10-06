@@ -1,6 +1,6 @@
 # Production image for the API. Two stages: build with dev dependencies, run with only
 # what `npm start` needs. Render uses its Node runtime (render.yaml), so this is for any
-# other host — and for running the whole stack locally with `docker compose up`.
+# other host - and for running the whole stack locally with `docker compose up`.
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./

@@ -1,11 +1,11 @@
 # Weekly dependency review: everything that changes because somebody else published
-# something, rather than because we changed something — which is why none of it gates a
+# something, rather than because we changed something - which is why none of it gates a
 # pull request. A red run means there is a decision to make (see scripts/check-audit.mjs).
 name: Dependency audit
 
 on:
   schedule:
-    # Mondays, 04:00 UTC — 09:30 IST, waiting at the start of the week.
+    # Mondays, 04:00 UTC - 09:30 IST, waiting at the start of the week.
     - cron: '0 4 * * 1'
   workflow_dispatch:
 

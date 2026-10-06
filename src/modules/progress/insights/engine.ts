@@ -10,7 +10,7 @@ export class InsightEngine {
   ) {}
 
   run(ctx: InsightContext): Insight[] {
-    // Until there's enough history, patterns are noise — say so instead.
+    // Until there's enough history, patterns are noise - say so instead.
     const intro = warmingUp.evaluate(ctx);
     if (intro) return [strip(intro)];
 

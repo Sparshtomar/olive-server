@@ -189,7 +189,7 @@ export class MockReportExtractor implements ReportExtractor {
     await delay(1200);
     return {
       isLabReport: true,
-      labName: 'Sample Diagnostics — Lipid profile',
+      labName: 'Sample Diagnostics - Lipid profile',
       reportDate: null,
       markers: [
         { name: 'Total Cholesterol', value: 218, unit: 'mg/dL', refLow: null, refHigh: 200 },

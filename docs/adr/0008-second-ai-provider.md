@@ -1,4 +1,4 @@
-# 0008 — A second AI provider behind the same port
+# 0008 - A second AI provider behind the same port
 
 **Status:** Accepted
 
@@ -6,7 +6,7 @@
 
 Two days before submission the Google Cloud project behind the Gemini key was
 suspended, and a replacement key could not be created without payment. Every AI call
-in production — meal photos, voice notes, lab reports, chat — failed. The AI layer had
+in production - meal photos, voice notes, lab reports, chat - failed. The AI layer had
 been written against interfaces (`MealAnalyzer`, `ReportExtractor`, `HealthAssistant`,
 ADR 0001) with Gemini as the only real adapter.
 
@@ -41,6 +41,6 @@ Prompts, model-output schemas and the clamp-and-map step moved from `ai/gemini/`
 
 ## Revisit when
 
-A Gemini key is available again — flip `AI_PROVIDER`, nothing else. Or when a third
+A Gemini key is available again - flip `AI_PROVIDER`, nothing else. Or when a third
 capability gap appears (video, say) that one provider has and the other does not; the
 rule stays the same: fill it in the adapter, never in the app.

@@ -25,8 +25,8 @@ export interface AskInput {
 const TITLE_MAX = 60;
 
 /**
- * Olive's chat. Every answer is grounded in the user's own data — profile, targets,
- * today's meals, every tracked lab marker — assembled here and handed to the model as
+ * Olive's chat. Every answer is grounded in the user's own data - profile, targets,
+ * today's meals, every tracked lab marker - assembled here and handed to the model as
  * plain text, so the model explains the user's numbers rather than inventing them.
  * The turn is written only after the model has answered: a failed call saves nothing.
  */
@@ -98,7 +98,7 @@ export class ChatService {
       `Daily targets: ${t.calories} kcal, protein ${t.protein} g, carbs ${t.carbs} g, fat ${t.fat} g.`,
       `Today (${today}) so far: ${Math.round(eaten.calories)} kcal, protein ${Math.round(eaten.protein)} g, carbs ${Math.round(eaten.carbs)} g, fat ${Math.round(eaten.fat)} g, fiber ${Math.round(eaten.fiber)} g, sugar ${Math.round(eaten.sugar)} g, saturated fat ${Math.round(eaten.saturatedFat)} g.`,
       day.meals.length
-        ? `Meals today: ${day.meals.map((m) => `${m.slot} — ${m.title} (${Math.round(m.totals.calories)} kcal)`).join('; ')}.`
+        ? `Meals today: ${day.meals.map((m) => `${m.slot} - ${m.title} (${Math.round(m.totals.calories)} kcal)`).join('; ')}.`
         : 'No meals logged yet today.',
     ];
 

@@ -94,7 +94,7 @@ export const WEEKEND_TREATS = [
 export const DEMO_REPORTS = [
   {
     monthsAgo: 4,
-    title: 'Annual health check — Metropolis',
+    title: 'Annual health check - Metropolis',
     markers: [
       { name: 'Total Cholesterol', value: 231, unit: 'mg/dL', refLow: null, refHigh: 200 },
       { name: 'LDL Cholesterol', value: 152, unit: 'mg/dL', refLow: null, refHigh: 100 },
@@ -109,7 +109,7 @@ export const DEMO_REPORTS = [
   },
   {
     monthsAgo: 0.5,
-    title: 'Lipid & sugar follow-up — Thyrocare',
+    title: 'Lipid & sugar follow-up - Thyrocare',
     markers: [
       { name: 'Total Cholesterol', value: 214, unit: 'mg/dL', refLow: null, refHigh: 200 },
       { name: 'LDL Cholesterol', value: 136, unit: 'mg/dL', refLow: null, refHigh: 100 },

@@ -3,7 +3,7 @@ import { CONFIDENCE_LEVELS } from '@sparshtomar/olive-shared';
 
 /**
  * Schemas the *model* fills in. Deliberately looser and flatter than the API's
- * domain schemas (no max lengths, no nested objects) — models follow simple shapes
+ * domain schemas (no max lengths, no nested objects) - models follow simple shapes
  * more reliably. `toMealDraft` / `toReportDraft` then clamp and reshape the result.
  */
 
@@ -46,7 +46,7 @@ export const aiReportSchema = z.object({
   message: z
     .string()
     .describe('If not a lab report or unreadable: one friendly sentence explaining why. Otherwise empty.'),
-  labName: z.string().describe('Name of the lab or the panel (e.g. "Thyrocare — Lipid profile"). Empty if unknown.'),
+  labName: z.string().describe('Name of the lab or the panel (e.g. "Thyrocare - Lipid profile"). Empty if unknown.'),
   reportDate: z.string().describe('Sample collection date as YYYY-MM-DD, else report date. Empty if not printed.'),
   markers: z.array(
     z.object({

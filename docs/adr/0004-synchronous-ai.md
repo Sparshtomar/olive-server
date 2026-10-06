@@ -1,4 +1,4 @@
-# 0004 — AI analysis is a synchronous request
+# 0004 - AI analysis is a synchronous request
 
 **Status:** Accepted
 

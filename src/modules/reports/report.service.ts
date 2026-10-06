@@ -70,7 +70,7 @@ export class ReportService {
     return trends.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
   }
 
-  /** Most recent status of every tracked marker — input for nutrition focus. */
+  /** Most recent status of every tracked marker - input for nutrition focus. */
   async latestStatuses(userId: string): Promise<{ key: MarkerKey; status: MarkerStatus }[]> {
     const byKey = groupByKey(await this.reports.trackedHistory(userId));
     return [...byKey.entries()].map(([key, points]) => ({ key, status: points.at(-1)!.status }));

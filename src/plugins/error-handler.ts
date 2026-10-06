@@ -24,7 +24,7 @@ export const registerErrorHandler = (app: FastifyInstance) => {
     }
 
     if (err.statusCode === 429) {
-      return reply.status(429).send(body(ERROR_CODES.RATE_LIMITED, 'Slow down a little — try again in a minute'));
+      return reply.status(429).send(body(ERROR_CODES.RATE_LIMITED, 'Slow down a little - try again in a minute'));
     }
 
     if (err.statusCode && err.statusCode < 500) {

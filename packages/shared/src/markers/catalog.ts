@@ -181,7 +181,7 @@ export const MARKER_CATALOG: Record<MarkerKey, MarkerDefinition> = {
     conversions: { 'pmol/l': mul(1.355) },
     range: () => ({ low: 200, high: 900 }),
     tips: {
-      low: 'Dairy, eggs, fish and fortified cereals carry B12. Vegetarians often need a supplement — check with your doctor.',
+      low: 'Dairy, eggs, fish and fortified cereals carry B12. Vegetarians often need a supplement - check with your doctor.',
     },
   },
   hemoglobin: {
@@ -205,7 +205,7 @@ export const MARKER_CATALOG: Record<MarkerKey, MarkerDefinition> = {
     conversions: { 'uiu/ml': mul(1), 'miu/ml': mul(1000) },
     range: () => ({ low: 0.4, high: 4 }),
     tips: {
-      high: 'Thyroid levels are managed with your doctor, not diet. Keep logging — energy changes show up in your trends.',
+      high: 'Thyroid levels are managed with your doctor, not diet. Keep logging - energy changes show up in your trends.',
       low: 'Thyroid levels are managed with your doctor, not diet.',
     },
   },

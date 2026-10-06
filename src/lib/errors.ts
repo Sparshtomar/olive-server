@@ -2,7 +2,7 @@ import { ERROR_CODES, type ErrorCode } from '@sparshtomar/olive-shared';
 
 /**
  * Errors the API expects and knows how to explain. Anything else is a 500.
- * `code` is part of the API contract — the app maps it to copy and a recovery action.
+ * `code` is part of the API contract - the app maps it to copy and a recovery action.
  */
 export class AppError extends Error {
   constructor(

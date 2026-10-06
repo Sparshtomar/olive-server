@@ -72,7 +72,7 @@ the module anatomy is checked by [test/architecture.test.ts](../test/architectur
   the same id is on every log line for that request.
 - **Shutdown:** `SIGTERM` stops accepting, drains in-flight requests, closes the pool.
 - **Limits:** body 512 KB (1 MB for meal saves), uploads 5–15 MB by type, per-user AI rate limits.
-- **Docs:** `GET /docs` — OpenAPI generated from the same schemas that validate requests.
+- **Docs:** `GET /docs` - OpenAPI generated from the same schemas that validate requests.
 
 ## Scaling plan
 
@@ -84,6 +84,6 @@ simpler design is the correct one ([ADR 0005](adr/0005-one-postgres.md)).
 | A second API instance                     | Set `REDIS_URL`; rate limits become shared ([ADR 0006](adr/0006-optional-redis.md)). Nothing else. |
 | `/days/:date` p95 > 300 ms                | Materialise per-day totals on write (a table, not a cache).                                        |
 | AI p95 > 10 s, or providers need > 30 s   | Job table + worker in this codebase, push on completion ([ADR 0004](adr/0004-synchronous-ai.md)).  |
-| Sustained read load saturates the primary | Read replica for trends/insights only — never the screen after a write.                            |
+| Sustained read load saturates the primary | Read replica for trends/insights only - never the screen after a write.                            |
 | Photos > a few GB                         | Move `meal_photos` bytes to object storage; keep the row as the index.                             |
 | A third client (web dashboard, partner)   | Generate clients from the OpenAPI document ([ADR 0002](adr/0002-shared-zod-contract.md)).          |

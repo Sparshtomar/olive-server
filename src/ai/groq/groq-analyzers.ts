@@ -37,7 +37,7 @@ export class GroqMealAnalyzer implements MealAnalyzer {
         isFood: false,
         title: '',
         items: [],
-        message: "I couldn't hear anything in that recording — try again a little closer to the mic.",
+        message: "I couldn't hear anything in that recording - try again a little closer to the mic.",
       };
     }
     const ai = await this.client.generateJson({

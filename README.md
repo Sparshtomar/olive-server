@@ -18,7 +18,7 @@ olive-server/
 
 ## Architecture
 
-Layered per module, **routes → services → repositories**, wired in a single composition root (`src/container.ts`). Modules use each other only through their `index.ts` (services and types); repositories stay private to their module. Looking for `controllers/`, `models/`, DTOs? [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) maps every conventional layer to its file here, traces a request end to end, and holds the **scaling plan** with the trigger for each change. The reasoning behind the big calls — modules by feature, the shared Zod contract, rules over model output, synchronous AI, one Postgres, optional Redis — is in [docs/adr/](docs/adr/README.md).
+Layered per module, **routes → services → repositories**, wired in a single composition root (`src/container.ts`). Modules use each other only through their `index.ts` (services and types); repositories stay private to their module. Looking for `controllers/`, `models/`, DTOs? [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) maps every conventional layer to its file here, traces a request end to end, and holds the **scaling plan** with the trigger for each change. The reasoning behind the big calls - modules by feature, the shared Zod contract, rules over model output, synchronous AI, one Postgres, optional Redis - is in [docs/adr/](docs/adr/README.md).
 
 ```
 src/modules/
@@ -37,13 +37,13 @@ src/ai/
 - **Dependency inversion:** services depend on `MealAnalyzer` / `ReportExtractor` interfaces, so the AI vendor is swappable in one file (`src/ai/index.ts`), and tests inject a fake.
 - **Open/closed insights:** each insight is an `InsightRule` (a pure function of context); adding one doesn't touch the engine. Insights are rule-based on purpose: deterministic, tested, free, and they can't hallucinate about someone's health.
 - **AI output is never trusted:** the model fills a loose schema, which is clamped and mapped, validated against the strict domain schema, and reviewed by the user before anything is saved.
-- **Grounded chat:** every \"Ask Olive\" answer is built from the user's own profile, today's meals and lab markers, rendered to text by the service and quoted by the model — so it explains their numbers instead of inventing them ([ADR 0007](docs/adr/0007-grounded-assistant.md)).
+- **Grounded chat:** every \"Ask Olive\" answer is built from the user's own profile, today's meals and lab markers, rendered to text by the service and quoted by the model - so it explains their numbers instead of inventing them ([ADR 0007](docs/adr/0007-grounded-assistant.md)).
 - **Model fallback:** Gemini free-tier quotas are per model, so requests fall through `gemini-3-flash-preview → gemini-2.5-flash → gemini-2.5-flash-lite` on 429/5xx/timeouts.
 - **Files are sniffed by magic bytes**, not by extension or Content-Type. Per-user rate limits protect the AI quota.
 - **One error shape** (`{ error: { code, message } }`) with stable codes the app maps to copy and recovery actions.
 - **Idempotent writes:** a unique `(user_id, client_id)` means a retried or double-tapped save creates one meal.
 - **OpenAPI docs at `/docs`**, generated from the same Zod schemas that validate requests, so they can't drift.
-- **Hardened:** baseline security headers (`@fastify/helmet`), body and upload limits, per-user AI rate limits whose counters move to Redis when `REDIS_URL` is set (so a second instance is a config change — [ADR 0006](docs/adr/0006-optional-redis.md)).
+- **Hardened:** baseline security headers (`@fastify/helmet`), body and upload limits, per-user AI rate limits whose counters move to Redis when `REDIS_URL` is set (so a second instance is a config change - [ADR 0006](docs/adr/0006-optional-redis.md)).
 - **Operable:** `/health` round-trips the database (503 within 2 s if it doesn't answer, so the platform stops routing there), every response carries an `x-request-id` that is honoured from the client or proxy and appears in the logs, and `SIGTERM` drains in-flight requests before the pool closes.
 
 ### Data model
@@ -110,7 +110,7 @@ Tests use `TEST_DATABASE_URL` (default `postgres://olive:olive@localhost:5432/ol
 Two providers behind one port (`MealAnalyzer`, `ReportExtractor`, `HealthAssistant` in `src/ai/types.ts`); `AI_PROVIDER` picks one, `mock` runs without a key.
 
 - **Gemini Flash** (AI Studio): one model handles images, audio and PDFs natively with JSON-schema output. The first choice when a key is available.
-- **Groq** (free tier, no card): `qwen3.8-27b` reads images and returns JSON, Whisper transcribes voice notes, and digital PDFs are reduced to their text layer on the server first (`unpdf`); scanned PDFs get a clear "photograph the pages" message. Shipped because the Gemini project behind this app was suspended two days before submission — see [ADR 0008](docs/adr/0008-second-ai-provider.md).
+- **Groq** (free tier, no card): `qwen3.8-27b` reads images and returns JSON, Whisper transcribes voice notes, and digital PDFs are reduced to their text layer on the server first (`unpdf`); scanned PDFs get a clear "photograph the pages" message. Shipped because the Gemini project behind this app was suspended two days before submission - see [ADR 0008](docs/adr/0008-second-ai-provider.md).
 
 Both clients fall through an ordered model list on rate limits, outages, timeouts and schema-invalid answers, and the model's output is clamped and validated before anyone sees it.
 

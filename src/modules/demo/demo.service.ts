@@ -8,7 +8,7 @@ import { DEMO_PROFILE, DEMO_REPORTS, MEAL_OPTIONS, WEEKEND_TREATS } from './demo
 export interface DemoClock {
   /** The device's local date. */
   today: DateKey;
-  /** The device's local hour (0–23) — today's meals stop at "now". */
+  /** The device's local hour (0–23) - today's meals stop at "now". */
   hour: number;
   /** Device offset from UTC in minutes (e.g. +330 for IST). */
   utcOffsetMinutes: number;
@@ -40,7 +40,7 @@ export class DemoService {
 
     for (let ago = HISTORY_DAYS; ago >= 0; ago--) {
       const date = addDays(clock.today, -ago);
-      if (ago === 9) continue; // a forgotten day — real logs have gaps
+      if (ago === 9) continue; // a forgotten day - real logs have gaps
       const weekday = fromDateKey(date).getDay();
       const isWeekend = weekday === 0 || weekday === 6;
 
@@ -81,7 +81,7 @@ const localTime = (date: DateKey, [h, m]: [number, number], offsetMinutes: numbe
   return new Date(Date.UTC(y, mo - 1, d, h, m) - offsetMinutes * 60_000).toISOString();
 };
 
-/** mulberry32 — same demo every time, so screenshots and walkthroughs stay consistent. */
+/** mulberry32 - same demo every time, so screenshots and walkthroughs stay consistent. */
 const seeded = (seed: number) => () => {
   seed = (seed + 0x6d2b79f5) | 0;
   let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);

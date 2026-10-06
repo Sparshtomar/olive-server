@@ -1,7 +1,7 @@
 # Every gate a change must pass. The same commands run locally via `npm run check`. CI adds
 # what a local hook cannot: a clean `npm ci`, tests against a real Postgres, and diff coverage
 # against the PR's target branch. Checks that change when someone else publishes (vulnerabilities,
-# licences) run weekly instead — see dependency-audit.yml.
+# licences) run weekly instead - see dependency-audit.yml.
 name: CI
 
 on:

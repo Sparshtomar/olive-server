@@ -1,4 +1,4 @@
-# 0003 — Insights are rules, not model output
+# 0003 - Insights are rules, not model output
 
 **Status:** Accepted
 
@@ -17,7 +17,7 @@ is adding a file; the engine does not change.
 ## Consequences
 
 - Deterministic and unit-tested; the same week always yields the same cards.
-- Free and instant — no quota, no latency, works offline from cached data.
+- Free and instant - no quota, no latency, works offline from cached data.
 - Cannot hallucinate about someone's health. Every sentence was written by a person.
 - Less varied than generated prose. Rules need to be written; they do not emerge.
 

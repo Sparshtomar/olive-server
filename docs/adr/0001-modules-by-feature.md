@@ -1,4 +1,4 @@
-# 0001 — Modules by feature, layered inside
+# 0001 - Modules by feature, layered inside
 
 **Status:** Accepted
 
@@ -13,7 +13,7 @@ from importing `mealRepository` directly.
 
 Group by feature. Each module under `src/modules/<name>/` owns its routes (the
 controllers), service, repository and mappers, and exposes a public API through
-`index.ts`. Inside a module the layers are fixed — `routes → service → repository` —
+`index.ts`. Inside a module the layers are fixed - `routes → service → repository` -
 and across modules only `index.ts` may be imported. Infrastructure (`db/`, `ai/`,
 `lib/`, `config/`) sits below every module and may not import one. A single composition
 root (`container.ts`) wires concrete classes together.

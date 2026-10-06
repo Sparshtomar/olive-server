@@ -14,7 +14,7 @@ import type { DemoClock } from './modules/demo';
  *
  * Idempotent in effect: every run adds one more isolated demo user, never touches
  * existing rows. Runs migrations first so it works against an empty database. No
- * AI key is needed — the demo data is fixed, so the mock provider is used.
+ * AI key is needed - the demo data is fixed, so the mock provider is used.
  */
 const env = loadEnv({ ...process.env, AI_PROVIDER: 'mock' });
 const logger = pino({ level: 'warn' });

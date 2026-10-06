@@ -1,4 +1,4 @@
-# 0007 — The assistant answers from the user's own data, through the structured client
+# 0007 - The assistant answers from the user's own data, through the structured client
 
 **Status:** Accepted
 
@@ -12,9 +12,9 @@ answer that sounds confident about numbers it has never seen is worse than no an
 ## Decision
 
 The service builds the context, not the model. Before every turn `ChatService` renders
-what Olive knows about the user as plain text — profile and daily targets, today's
+what Olive knows about the user as plain text - profile and daily targets, today's
 meals and totals, the nutrition focus derived from reports, and every tracked lab
-marker with its latest value, healthy range, status, trend and tip — and passes it with
+marker with its latest value, healthy range, status, trend and tip - and passes it with
 the conversation history and any attached photo. The system prompt tells the model to
 quote those numbers, to say when the data does not cover the question, and where the
 line is between explaining a marker and practising medicine.
@@ -39,6 +39,6 @@ History is capped at the last twelve turns in the prompt and stored in full.
 
 ## Revisit when
 
-Users want to ask about trends over months — then summarise the history server-side
-(weekly aggregates) rather than pasting more rows. Or latency climbs past ~10 s —
+Users want to ask about trends over months - then summarise the history server-side
+(weekly aggregates) rather than pasting more rows. Or latency climbs past ~10 s -
 then ADR 0004's queue applies here too.

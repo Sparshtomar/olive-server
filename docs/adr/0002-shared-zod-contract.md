@@ -1,4 +1,4 @@
-# 0002 — One shared Zod package is the API contract
+# 0002 - One shared Zod package is the API contract
 
 **Status:** Accepted
 
@@ -30,4 +30,4 @@ rejects a malformed payload at the boundary, on both sides, with a message.
 ## Revisit when
 
 A third consumer appears (a web dashboard, a partner integration) with a different
-release cadence — then OpenAPI-generated clients become worth their build step.
+release cadence - then OpenAPI-generated clients become worth their build step.

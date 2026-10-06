@@ -4,11 +4,11 @@
  *
  * Runs `npm audit` and fails on high/critical advisories not on the accepted list. It
  * needs the network and changes when somebody else publishes something, so it runs weekly
- * (.github/workflows/dependency-audit.yml) rather than on every pull request — a gate that
+ * (.github/workflows/dependency-audit.yml) rather than on every pull request - a gate that
  * turns unrelated PRs red is a gate that gets deleted.
  *
  * `npm audit` has no allowlist, only "block on everything" or "ignore everything". Most of
- * what it reports in an Expo app lives in the CLI and config plugins — build-time code on
+ * what it reports in an Expo app lives in the CLI and config plugins - build-time code on
  * our machines, pinned by the SDK, never shipped. So each accepted advisory carries a
  * reason and a review date; past the date it counts as unaccepted again and this goes red.
  *
@@ -33,7 +33,7 @@ const BLOCKING = new Set(['high', 'critical']);
 /**
  * Advisories we have looked at and decided to carry, keyed by the GitHub advisory id npm
  * reports. `until` is a review date. Adding an entry means writing down the actual
- * exposure — "transitive dependency" is not a reason; "runs only in the CLI on our
+ * exposure - "transitive dependency" is not a reason; "runs only in the CLI on our
  * machines" is.
  */
 const ACCEPTED = new Map([]);
@@ -109,7 +109,7 @@ section(
   red('x Accepted, but past its review date'),
   buckets.expired,
   (a) =>
-    `${line(a)}\n         ${red(`review was due ${a.until}`)} ${dim('— re-check the reasoning, then move the date or fix it')}`,
+    `${line(a)}\n         ${red(`review was due ${a.until}`)} ${dim('- re-check the reasoning, then move the date or fix it')}`,
 );
 section(
   yellow('! Accepted entry for an advisory that is no longer reported'),
@@ -117,7 +117,7 @@ section(
   (a) => `${a.id}  ${dim('remove it from ACCEPTED in scripts/check-audit.mjs')}`,
 );
 if (SHOW_ALL) {
-  section(dim('· Accepted'), buckets.accepted, (a) => `${line(a)}\n         ${dim(`until ${a.until} — ${a.why}`)}`);
+  section(dim('· Accepted'), buckets.accepted, (a) => `${line(a)}\n         ${dim(`until ${a.until} - ${a.why}`)}`);
   section(dim('· Below the blocking threshold'), buckets.advisory);
 }
 

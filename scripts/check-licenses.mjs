@@ -3,7 +3,7 @@
  * Licence gate for the production dependency tree.
  *
  * The API runs as a service rather than being distributed, so copyleft is a smaller
- * obligation here than in the app — but a GPL dependency is still a decision somebody
+ * obligation here than in the app - but a GPL dependency is still a decision somebody
  * should make on purpose, and npm never mentions it. devDependencies are out of scope.
  *
  * Offline and dependency-free: every installed package declares its licence in its own
@@ -126,8 +126,8 @@ const section = (title, items, note) => {
 };
 
 section(red('x Forbidden licence in the shipped tree'), findings.forbidden);
-section(yellow('! File-level copyleft — review the obligation'), findings.weak, 'advisory');
-section(yellow('! Licence string not recognised — classify it'), findings.unrecognised, 'advisory');
+section(yellow('! File-level copyleft - review the obligation'), findings.weak, 'advisory');
+section(yellow('! Licence string not recognised - classify it'), findings.unrecognised, 'advisory');
 
 if (SHOW_ALL) {
   const byLicense = new Map();

@@ -51,7 +51,7 @@ export const foodItemSchema = z.object({
 });
 export type FoodItem = z.infer<typeof foodItemSchema>;
 
-/** What the AI proposes. Never persisted directly — the user reviews it first. */
+/** What the AI proposes. Never persisted directly - the user reviews it first. */
 export const mealDraftSchema = z.object({
   isFood: z.boolean(),
   title: z.string(),

@@ -1,6 +1,6 @@
 /**
  * Content sniffing by magic bytes. Client-sent Content-Type headers and file
- * extensions are hints, not facts — these checks decide what a file really is.
+ * extensions are hints, not facts - these checks decide what a file really is.
  */
 
 const startsWith = (buf: Buffer, bytes: number[], offset = 0) => bytes.every((b, i) => buf[offset + i] === b);

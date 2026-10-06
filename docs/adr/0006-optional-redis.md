@@ -1,4 +1,4 @@
-# 0006 — Redis is optional, and only for rate limiting
+# 0006 - Redis is optional, and only for rate limiting
 
 **Status:** Accepted
 
@@ -23,5 +23,5 @@ know which store is active.
 
 ## Revisit when
 
-A second use for Redis appears that is not a cache — e.g. a job queue (ADR 0004). A
+A second use for Redis appears that is not a cache - e.g. a job queue (ADR 0004). A
 cache is not a reason; ADR 0005 covers why.

@@ -1,7 +1,7 @@
 # Architecture decision records
 
 One file per decision that shaped this codebase and would be expensive to reverse. Each
-records the context at the time, what was decided, what it costs, and — most useful —
+records the context at the time, what was decided, what it costs, and - most useful -
 the **trigger** that would make us revisit it. A decision without a trigger is dogma.
 
 | #    | Decision                                                                     | Status   |

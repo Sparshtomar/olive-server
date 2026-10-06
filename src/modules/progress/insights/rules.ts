@@ -58,7 +58,7 @@ export const calorieOvershoot: InsightRule = {
       id: this.id,
       tone: 'nudge',
       title: `Over target on ${over.length} of ${days.length} days`,
-      body: `By about ${Math.round(excess)} kcal on those days.${heaviest ? ` ${MEAL_SLOT_LABEL[heaviest.slot]} made up ${pct(heaviest.share)} of it — a smaller ${MEAL_SLOT_LABEL[heaviest.slot].toLowerCase()} is the simplest lever.` : ''}`,
+      body: `By about ${Math.round(excess)} kcal on those days.${heaviest ? ` ${MEAL_SLOT_LABEL[heaviest.slot]} made up ${pct(heaviest.share)} of it - a smaller ${MEAL_SLOT_LABEL[heaviest.slot].toLowerCase()} is the simplest lever.` : ''}`,
       score: 70 + (over.length / days.length) * 20,
     };
   },
@@ -111,7 +111,7 @@ export const consistentLogging: InsightRule = {
       id: this.id,
       tone: 'positive',
       title: logged === 7 ? 'Every day logged this week' : `${logged} of 7 days logged`,
-      body: 'People who log consistently are far more likely to reach their goal. The habit is the hard part — you have it.',
+      body: 'People who log consistently are far more likely to reach their goal. The habit is the hard part - you have it.',
       score: 38,
     };
   },
@@ -167,7 +167,7 @@ export const reportFocus: InsightRule = {
       ).length;
       return { focus: f, met, rate: met / days.length };
     });
-    // Speak to the weakest area — that's where the next improvement is.
+    // Speak to the weakest area - that's where the next improvement is.
     const worst = results.sort((a, b) => a.rate - b.rate)[0]!;
     const { focus, met } = worst;
     const label = NUTRIENT_META[focus.nutrient].label.toLowerCase();
@@ -180,7 +180,7 @@ export const reportFocus: InsightRule = {
         id: `${this.id}-${focus.nutrient}`,
         tone: 'positive',
         title: `${capitalize(label)} on track`,
-        body: `You kept ${label} ${goal} on ${met} of ${days.length} days — exactly what your ${markers} need. It'll show in your next report.`,
+        body: `You kept ${label} ${goal} on ${met} of ${days.length} days - exactly what your ${markers} need. It'll show in your next report.`,
         score: 55,
       };
     }
@@ -188,7 +188,7 @@ export const reportFocus: InsightRule = {
       id: `${this.id}-${focus.nutrient}`,
       tone: 'nudge',
       title: `Your report says: watch ${label}`,
-      body: `${markers} ${focus.reasons.length > 1 ? 'are' : 'is'} out of range. Keeping ${label} ${goal} helps — you managed it on ${met} of ${days.length} days.`,
+      body: `${markers} ${focus.reasons.length > 1 ? 'are' : 'is'} out of range. Keeping ${label} ${goal} helps - you managed it on ${met} of ${days.length} days.`,
       score: 85,
     };
   },
