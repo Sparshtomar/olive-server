@@ -144,5 +144,6 @@ export default defineConfig([
       '@typescript-eslint/no-unsafe-argument': 'off',
     },
   },
-  { files: ['src/db/migrate.ts'], rules: { 'no-console': 'off' } },
+  // CLIs talk to a terminal, not a log pipeline.
+  { files: ['src/db/migrate.ts', 'src/seed.ts'], rules: { 'no-console': 'off' } },
 ]);

@@ -76,6 +76,7 @@ Requirements: Node 22+ (see `.nvmrc`), PostgreSQL 16 (Homebrew on 5432, or `npm 
 npm install                      # also builds packages/shared
 cp .env.example .env             # set DATABASE_URL; GEMINI_API_KEY, or AI_PROVIDER=mock
 npm run dev                      # http://localhost:4010, migrates on boot; API docs at /docs
+npm run db:seed                  # adds a demo user (two weeks of meals, two reports) to DATABASE_URL
 ```
 
 **No Gemini key?** Set `AI_PROVIDER=mock` and every flow works with deterministic fake analysis.
