@@ -7,6 +7,7 @@ const envSchema = z
     HOST: z.string().default('0.0.0.0'),
     DATABASE_URL: z.url(),
     AI_PROVIDER: z.enum(['gemini', 'mock']).default('gemini'),
+    /** An AI Studio key (AIza…) or a Vertex AI Express Mode key (AQ.…); the endpoint is chosen from the prefix. */
     GEMINI_API_KEY: z.string().optional(),
     GEMINI_MODELS: z
       .string()

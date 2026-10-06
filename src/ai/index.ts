@@ -28,8 +28,11 @@ export const createAiServices = (env: Env, log: FastifyBaseLogger): AiServices =
       healthAssistant: new MockHealthAssistant(),
     };
   }
+  // Keys from AI Studio start with "AIza" and use the Gemini Developer API; keys from
+  // Vertex AI Express Mode start with "AQ." and only work against the Vertex endpoint.
+  const vertexai = env.GEMINI_API_KEY?.startsWith('AQ.') ?? false;
   const client = new GeminiStructuredClient(
-    new GoogleGenAI({ apiKey: env.GEMINI_API_KEY }),
+    new GoogleGenAI({ apiKey: env.GEMINI_API_KEY, vertexai }),
     env.GEMINI_MODELS,
     log.child({ module: 'ai' }),
   );
