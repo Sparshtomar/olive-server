@@ -1,4 +1,5 @@
 export * from './api';
+export * from './chat';
 export * from './dates';
 export * from './markers';
 export * from './meals';
