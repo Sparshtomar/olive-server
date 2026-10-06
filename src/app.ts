@@ -1,10 +1,12 @@
 import cors from '@fastify/cors';
+import helmet from '@fastify/helmet';
 import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import Fastify, { type FastifyBaseLogger } from 'fastify';
 import { jsonSchemaTransform, serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
+import type { Redis } from 'ioredis';
 import { USER_ID_HEADER } from '@sparshtomar/olive-shared';
 import type { Container } from './container';
 import { demoRoutes } from './modules/demo';
@@ -23,12 +25,14 @@ export interface AppOptions {
   rateLimit?: boolean;
   /** Resolves when the database answers. Without it, /health only proves the process is up. */
   ping?: () => Promise<unknown>;
+  /** Shared store for rate-limit counters. Without it they live in process memory (one instance only). */
+  redis?: Redis;
 }
 
 /** A health probe must answer fast; a hung database counts as down. */
 const HEALTH_TIMEOUT_MS = 2000;
 
-export const buildApp = async ({ container, corsOrigin, logger, rateLimit: limit = true, ping }: AppOptions) => {
+export const buildApp = async ({ container, corsOrigin, logger, rateLimit: limit = true, ping, redis }: AppOptions) => {
   const app = Fastify({
     loggerInstance: logger,
     trustProxy: true,
@@ -46,6 +50,8 @@ export const buildApp = async ({ container, corsOrigin, logger, rateLimit: limit
   app.setSerializerCompiler(serializerCompiler);
   registerErrorHandler(app);
 
+  // Baseline security headers. No CSP: this is a JSON API, and a CSP would only break the docs page.
+  await app.register(helmet, { contentSecurityPolicy: false });
   await app.register(cors, { origin: corsOrigin, methods: ['GET', 'POST', 'PATCH', 'DELETE'] });
   await app.register(multipart);
   await app.register(rateLimit, {
@@ -53,6 +59,7 @@ export const buildApp = async ({ container, corsOrigin, logger, rateLimit: limit
     enableDraftSpec: true,
     // Per user when known, else per IP.
     keyGenerator: (req) => String(req.headers[USER_ID_HEADER] ?? req.ip),
+    ...(redis ? { redis } : {}),
     ...(limit ? {} : { max: Number.MAX_SAFE_INTEGER }),
   });
 

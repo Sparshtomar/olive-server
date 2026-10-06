@@ -21,6 +21,8 @@ const envSchema = z
       .string()
       .default('*')
       .transform((s) => (s === '*' ? true : s.split(',').map((o) => o.trim()))),
+    /** Shared rate-limit counters across instances. Unset = in-memory, fine for one instance. */
+    REDIS_URL: z.url().optional(),
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   })
   .refine((e) => e.AI_PROVIDER !== 'gemini' || !!e.GEMINI_API_KEY, {
