@@ -18,7 +18,7 @@ olive-server/
 
 ## Architecture
 
-Layered per module, **routes → services → repositories**, wired in a single composition root (`src/container.ts`). Modules use each other only through their `index.ts` (services and types); repositories stay private to their module.
+Layered per module, **routes → services → repositories**, wired in a single composition root (`src/container.ts`). Modules use each other only through their `index.ts` (services and types); repositories stay private to their module. Looking for `controllers/`, `models/`, DTOs? [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) maps every conventional layer to its file here, traces a request end to end, and holds the **scaling plan** with the trigger for each change. The reasoning behind the big calls — modules by feature, the shared Zod contract, rules over model output, synchronous AI, one Postgres, optional Redis — is in [docs/adr/](docs/adr/README.md).
 
 ```
 src/modules/
@@ -41,6 +41,7 @@ src/ai/
 - **One error shape** (`{ error: { code, message } }`) with stable codes the app maps to copy and recovery actions.
 - **Idempotent writes:** a unique `(user_id, client_id)` means a retried or double-tapped save creates one meal.
 - **OpenAPI docs at `/docs`**, generated from the same Zod schemas that validate requests, so they can't drift.
+- **Hardened:** baseline security headers (`@fastify/helmet`), body and upload limits, per-user AI rate limits whose counters move to Redis when `REDIS_URL` is set (so a second instance is a config change — [ADR 0006](docs/adr/0006-optional-redis.md)).
 - **Operable:** `/health` round-trips the database (503 within 2 s if it doesn't answer, so the platform stops routing there), every response carries an `x-request-id` that is honoured from the client or proxy and appears in the logs, and `SIGTERM` drains in-flight requests before the pool closes.
 
 ### Data model
@@ -100,7 +101,7 @@ Tests use `TEST_DATABASE_URL` (default `postgres://olive:olive@localhost:5432/ol
 
 ## Deploying
 
-[render.yaml](render.yaml) deploys the API to Render; Postgres runs on Neon. Set `DATABASE_URL` and `GEMINI_API_KEY` in the Render dashboard. Migrations run at boot, so a deploy is one step. `/health` is the health check, and the app pings it on launch so a sleeping free-tier instance starts waking before the first real request.
+[render.yaml](render.yaml) deploys the API to Render; Postgres runs on Neon. A multi-stage [Dockerfile](Dockerfile) builds the same service for any container host (`docker build -t olive-server . && docker run -p 4010:4010 --env-file .env olive-server`). Set `DATABASE_URL` and `GEMINI_API_KEY` in the Render dashboard. Migrations run at boot, so a deploy is one step. `/health` is the health check, and the app pings it on launch so a sleeping free-tier instance starts waking before the first real request.
 
 ## AI model choice
 
