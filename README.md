@@ -26,9 +26,10 @@ src/modules/
   meals/     analyze (photo/voice/text), CRUD, photo serving
   reports/   analyze, CRUD, marker trends
   progress/  day summary, trends, streak, insights/ (rule engine)
+  chat/      Ask Olive: conversations, turns with photos, answers grounded in the user's data
   demo/      demo-user generator
 src/ai/
-  types.ts   MealAnalyzer, ReportExtractor interfaces
+  types.ts   MealAnalyzer, ReportExtractor, HealthAssistant interfaces
   gemini/    structured-output client with model fallback, prompts, mappers
   mock/      deterministic provider for keyless dev and tests
 ```
@@ -36,6 +37,7 @@ src/ai/
 - **Dependency inversion:** services depend on `MealAnalyzer` / `ReportExtractor` interfaces, so the AI vendor is swappable in one file (`src/ai/index.ts`), and tests inject a fake.
 - **Open/closed insights:** each insight is an `InsightRule` (a pure function of context); adding one doesn't touch the engine. Insights are rule-based on purpose: deterministic, tested, free, and they can't hallucinate about someone's health.
 - **AI output is never trusted:** the model fills a loose schema, which is clamped and mapped, validated against the strict domain schema, and reviewed by the user before anything is saved.
+- **Grounded chat:** every \"Ask Olive\" answer is built from the user's own profile, today's meals and lab markers, rendered to text by the service and quoted by the model — so it explains their numbers instead of inventing them ([ADR 0007](docs/adr/0007-grounded-assistant.md)).
 - **Model fallback:** Gemini free-tier quotas are per model, so requests fall through `gemini-3-flash-preview → gemini-2.5-flash → gemini-2.5-flash-lite` on 429/5xx/timeouts.
 - **Files are sniffed by magic bytes**, not by extension or Content-Type. Per-user rate limits protect the AI quota.
 - **One error shape** (`{ error: { code, message } }`) with stable codes the app maps to copy and recovery actions.
