@@ -1,9 +1,9 @@
 import type { Part } from '@google/genai';
 import { addDays, toDateKey, type MealDraft, type ReportDraft } from '@sparshtomar/olive-shared';
+import { toMealDraft, toReportDraft } from '../mappers';
+import { MEAL_SYSTEM_PROMPT, REPORT_SYSTEM_PROMPT, mealUserPrompt } from '../prompts';
+import { aiMealSchema, aiReportSchema } from '../schemas';
 import type { BinaryInput, MealAnalyzer, MealInput, ReportExtractor } from '../types';
-import { toMealDraft, toReportDraft } from './mappers';
-import { MEAL_SYSTEM_PROMPT, REPORT_SYSTEM_PROMPT, mealUserPrompt } from './prompts';
-import { aiMealSchema, aiReportSchema } from './schemas';
 import type { GeminiStructuredClient } from './structured-client';
 
 const inline = ({ data, mimeType }: BinaryInput): Part => ({ inlineData: { data: data.toString('base64'), mimeType } });

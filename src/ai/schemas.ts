@@ -59,3 +59,6 @@ export const aiReportSchema = z.object({
   ),
 });
 export type AiReport = z.infer<typeof aiReportSchema>;
+
+/** The assistant's prose comes back inside JSON so it rides the same validation and fallback as everything else. */
+export const replySchema = z.object({ reply: z.string().trim().min(1).max(4000) });

@@ -1,11 +1,8 @@
 import type { Part } from '@google/genai';
-import { z } from 'zod';
+import { ASSISTANT_SYSTEM_PROMPT, assistantUserPrompt } from '../prompts';
+import { replySchema } from '../schemas';
 import type { AssistantInput, HealthAssistant } from '../types';
-import { ASSISTANT_SYSTEM_PROMPT, assistantUserPrompt } from './prompts';
 import type { GeminiStructuredClient } from './structured-client';
-
-/** Prose comes back inside JSON so the answer rides the same fallback chain and validation as everything else. */
-const replySchema = z.object({ reply: z.string().trim().min(1).max(4000) });
 
 /** Keep the prompt bounded: older turns drop off first. */
 const MAX_HISTORY_TURNS = 12;
