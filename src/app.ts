@@ -21,10 +21,19 @@ export interface AppOptions {
   logger?: FastifyBaseLogger;
   /** Turned off in tests so suites can hammer endpoints. */
   rateLimit?: boolean;
+  /** Resolves when the database answers. Without it, /health only proves the process is up. */
+  ping?: () => Promise<unknown>;
 }
 
-export const buildApp = async ({ container, corsOrigin, logger, rateLimit: limit = true }: AppOptions) => {
-  const app = Fastify({ loggerInstance: logger, trustProxy: true, bodyLimit: 512 * 1024 });
+/** A health probe must answer fast; a hung database counts as down. */
+const HEALTH_TIMEOUT_MS = 2000;
+
+export const buildApp = async ({ container, corsOrigin, logger, rateLimit: limit = true, ping }: AppOptions) => {
+  const app = Fastify({
+    loggerInstance: logger,
+    trustProxy: true,
+    bodyLimit: 512 * 1024,
+  });
 
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
@@ -51,7 +60,19 @@ export const buildApp = async ({ container, corsOrigin, logger, rateLimit: limit
   });
   await app.register(swaggerUi, { routePrefix: '/docs' });
 
-  app.get('/health', async () => ({ ok: true }));
+  app.get('/health', async (request, reply) => {
+    if (!ping) return { ok: true, db: 'skipped' };
+    try {
+      await Promise.race([
+        ping(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('health check timed out')), HEALTH_TIMEOUT_MS)),
+      ]);
+      return { ok: true, db: 'ok' };
+    } catch (err) {
+      request.log.error({ err }, 'database unreachable');
+      return reply.status(503).send({ ok: false, db: 'down' });
+    }
+  });
 
   const { users, meals, reports, progress, demo } = container;
   await app.register(publicUserRoutes, { users });

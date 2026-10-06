@@ -1,3 +1,4 @@
+import { sql as query } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
@@ -9,7 +10,13 @@ export const createDb = (url: string) => {
     ssl: /sslmode=require|neon\.tech/.test(url) ? 'require' : undefined,
     onnotice: () => {},
   });
-  return { db: drizzle(sql, { schema, casing: 'snake_case' }), close: () => sql.end({ timeout: 5 }) };
+  const db = drizzle(sql, { schema, casing: 'snake_case' });
+  return {
+    db,
+    /** Cheapest possible round trip, for the health check. */
+    ping: () => db.execute(query`select 1`),
+    close: () => sql.end({ timeout: 5 }),
+  };
 };
 
 export type Database = ReturnType<typeof createDb>['db'];

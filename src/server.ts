@@ -11,7 +11,7 @@ const env = loadEnv();
 // Migrations are additive and idempotent; running them at boot keeps deploys one step.
 await runMigrations(env.DATABASE_URL);
 
-const { db, close } = createDb(env.DATABASE_URL);
+const { db, ping, close } = createDb(env.DATABASE_URL);
 const logger = pino({
   level: env.LOG_LEVEL,
   ...(env.NODE_ENV === 'development' && {
@@ -23,6 +23,7 @@ const app = await buildApp({
   container: createContainer(db, createAiServices(env, logger)),
   corsOrigin: env.CORS_ORIGIN,
   logger,
+  ping,
 });
 
 const shutdown = async (signal: string) => {

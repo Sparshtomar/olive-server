@@ -70,10 +70,10 @@ export interface TestContext {
 }
 
 export const createTestContext = async (): Promise<TestContext> => {
-  const { db, close } = createDb(process.env.TEST_DATABASE_URL!);
+  const { db, ping, close } = createDb(process.env.TEST_DATABASE_URL!);
   await db.execute(sql`truncate users cascade`);
   const ai = new FakeAi();
-  const app = await buildApp({ container: createContainer(db, ai), corsOrigin: true, rateLimit: false });
+  const app = await buildApp({ container: createContainer(db, ai), corsOrigin: true, rateLimit: false, ping });
 
   return {
     app,
