@@ -33,6 +33,13 @@ export const buildApp = async ({ container, corsOrigin, logger, rateLimit: limit
     loggerInstance: logger,
     trustProxy: true,
     bodyLimit: 512 * 1024,
+    // Honour an id from the client or proxy so one id follows a request across hops.
+    requestIdHeader: 'x-request-id',
+  });
+
+  // Every response carries its request id, so a user-reported failure can be found in the logs.
+  app.addHook('onSend', async (request, reply) => {
+    void reply.header('x-request-id', request.id);
   });
 
   app.setValidatorCompiler(validatorCompiler);

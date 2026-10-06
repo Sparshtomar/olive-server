@@ -41,6 +41,7 @@ src/ai/
 - **One error shape** (`{ error: { code, message } }`) with stable codes the app maps to copy and recovery actions.
 - **Idempotent writes:** a unique `(user_id, client_id)` means a retried or double-tapped save creates one meal.
 - **OpenAPI docs at `/docs`**, generated from the same Zod schemas that validate requests, so they can't drift.
+- **Operable:** `/health` round-trips the database (503 within 2 s if it doesn't answer, so the platform stops routing there), every response carries an `x-request-id` that is honoured from the client or proxy and appears in the logs, and `SIGTERM` drains in-flight requests before the pool closes.
 
 ### Data model
 

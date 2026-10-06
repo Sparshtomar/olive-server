@@ -30,3 +30,21 @@ describe('health', () => {
     await close();
   });
 });
+
+describe('request ids', () => {
+  it('returns one on every response', async () => {
+    const res = await t.app.inject({ method: 'GET', url: '/health' });
+    expect(res.headers['x-request-id']).toMatch(/\S/);
+  });
+
+  it('echoes the id a client or proxy supplies, so one id follows a request end to end', async () => {
+    const res = await t.app.inject({ method: 'GET', url: '/health', headers: { 'x-request-id': 'trace-abc-123' } });
+    expect(res.headers['x-request-id']).toBe('trace-abc-123');
+  });
+
+  it('carries the id on error responses too', async () => {
+    const res = await t.app.inject({ method: 'GET', url: '/nope', headers: { 'x-request-id': 'trace-404' } });
+    expect(res.statusCode).toBe(404);
+    expect(res.headers['x-request-id']).toBe('trace-404');
+  });
+});
