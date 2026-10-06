@@ -2,9 +2,9 @@
 
 The API behind [Olive](https://github.com/Sparshtomar/olive-mobile), a personal AI health assistant. Snap, say or type what you ate; Olive works out the nutrition, tracks it against a goal, and connects it to your lab reports. If your LDL is high, Olive turns that into a daily saturated-fat budget and tracks it as you log.
 
-The product thinking, the four core flows and the edge cases are in the [app's README](https://github.com/Sparshtomar/olive-mobile#readme). This repo is the backend and the shared domain package.
+The product thinking, the five core flows and the edge cases are in the [app's README](https://github.com/Sparshtomar/olive-mobile#readme). This repo is the backend and the shared domain package.
 
-**Stack:** Fastify 5 · Drizzle ORM · PostgreSQL · Zod · Gemini · Vitest
+**Stack:** Fastify 5 · Drizzle ORM · PostgreSQL · Zod · Gemini or Groq · Vitest
 
 ```
 olive-server/
@@ -30,15 +30,17 @@ src/modules/
   demo/      demo-user generator
 src/ai/
   types.ts   MealAnalyzer, ReportExtractor, HealthAssistant interfaces
-  gemini/    structured-output client with model fallback, prompts, mappers
+  gemini/    structured-output client with model fallback
+  groq/      vision + Whisper client; PDFs reduced to text first
   mock/      deterministic provider for keyless dev and tests
+  prompts, schemas and mappers are shared by every provider
 ```
 
 - **Dependency inversion:** services depend on `MealAnalyzer` / `ReportExtractor` interfaces, so the AI vendor is swappable in one file (`src/ai/index.ts`), and tests inject a fake.
 - **Open/closed insights:** each insight is an `InsightRule` (a pure function of context); adding one doesn't touch the engine. Insights are rule-based on purpose: deterministic, tested, free, and they can't hallucinate about someone's health.
 - **AI output is never trusted:** the model fills a loose schema, which is clamped and mapped, validated against the strict domain schema, and reviewed by the user before anything is saved.
 - **Grounded chat:** every \"Ask Olive\" answer is built from the user's own profile, today's meals and lab markers, rendered to text by the service and quoted by the model - so it explains their numbers instead of inventing them ([ADR 0007](docs/adr/0007-grounded-assistant.md)).
-- **Model fallback:** Gemini free-tier quotas are per model, so requests fall through `gemini-3-flash-preview → gemini-2.5-flash → gemini-2.5-flash-lite` on 429/5xx/timeouts.
+- **Model fallback:** free-tier quotas are per model, so each provider falls through an ordered model list on 429/5xx/timeouts (Gemini: `gemini-3-flash-preview → gemini-2.5-flash → gemini-2.5-flash-lite`; Groq: `GROQ_MODELS`).
 - **Files are sniffed by magic bytes**, not by extension or Content-Type. Per-user rate limits protect the AI quota.
 - **One error shape** (`{ error: { code, message } }`) with stable codes the app maps to copy and recovery actions.
 - **Idempotent writes:** a unique `(user_id, client_id)` means a retried or double-tapped save creates one meal.
@@ -78,12 +80,12 @@ Requirements: Node 22+ (see `.nvmrc`), PostgreSQL 16 (Homebrew on 5432, or `npm 
 
 ```bash
 npm install                      # also builds packages/shared
-cp .env.example .env             # set DATABASE_URL; GEMINI_API_KEY, or AI_PROVIDER=mock
+cp .env.example .env             # set DATABASE_URL and AI_PROVIDER (gemini | groq | mock) with its key
 npm run dev                      # http://localhost:4010, migrates on boot; API docs at /docs
 npm run db:seed                  # adds a demo user (two weeks of meals, two reports) to DATABASE_URL
 ```
 
-**No Gemini key?** Set `AI_PROVIDER=mock` and every flow works with deterministic fake analysis.
+**No AI key?** Set `AI_PROVIDER=mock` and every flow works with deterministic fake analysis.
 
 After changing `packages/shared`, run `npm run build:shared` so the API picks it up.
 
@@ -94,7 +96,7 @@ npm test         # API integration tests (needs Postgres) + shared package tests
 npm run check    # everything CI runs: format, lint (incl. architecture rules), types, dead code, tests
 ```
 
-- **API:** integration tests through HTTP against a real Postgres with a fake AI: identity, idempotent saves, photo sniffing, reports, trends, demo seeding, OpenAPI. Plus the insight rules and the architecture tests.
+- **API:** integration tests through HTTP against a real Postgres with a fake AI: identity, idempotent saves, photo sniffing, reports, trends, chat grounding, demo seeding, OpenAPI. Plus the insight rules and the architecture tests.
 - **shared:** nutrition math, marker matching, unit conversion, nutrition focus.
 
 Tests use `TEST_DATABASE_URL` (default `postgres://olive:olive@localhost:5432/olive_test`). With Docker: `TEST_DATABASE_URL=postgres://olive:olive@localhost:5433/olive_test npm test`.
@@ -103,7 +105,7 @@ Tests use `TEST_DATABASE_URL` (default `postgres://olive:olive@localhost:5432/ol
 
 ## Deploying
 
-[render.yaml](render.yaml) deploys the API to Render; Postgres runs on Neon. A multi-stage [Dockerfile](Dockerfile) builds the same service for any container host (`docker build -t olive-server . && docker run -p 4010:4010 --env-file .env olive-server`). Set `DATABASE_URL` and `GEMINI_API_KEY` in the Render dashboard. Migrations run at boot, so a deploy is one step. `/health` is the health check, and the app pings it on launch so a sleeping free-tier instance starts waking before the first real request.
+[render.yaml](render.yaml) deploys the API to Render; Postgres runs on Neon. A multi-stage [Dockerfile](Dockerfile) builds the same service for any container host (`docker build -t olive-server . && docker run -p 4010:4010 --env-file .env olive-server`). Set `DATABASE_URL` and the key for the provider `render.yaml` selects (`GROQ_API_KEY` today, or switch `AI_PROVIDER` and set `GEMINI_API_KEY`) in the Render dashboard. Migrations run at boot, so a deploy is one step. `/health` is the health check, and the app pings it on launch so a sleeping free-tier instance starts waking before the first real request.
 
 ## AI model choice
 
