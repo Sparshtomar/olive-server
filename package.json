@@ -26,6 +26,10 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit && npm run typecheck -w @sparshtomar/olive-shared",
     "test": "vitest run && npm run test -w @sparshtomar/olive-shared",
+    "test:coverage": "vitest run --coverage",
+    "check:coverage": "node scripts/check-coverage.mjs",
+    "check:audit": "node scripts/check-audit.mjs",
+    "check:licenses": "node scripts/check-licenses.mjs",
     "knip": "knip",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run knip && npm test",
     "prepare": "husky && npm run build:shared"
@@ -58,6 +62,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.5",
     "@types/node": "^24.0.0",
+    "@vitest/coverage-v8": "^5.0.3",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",
     "eslint-import-resolver-typescript": "^4.4.5",

@@ -1,10 +1,14 @@
-# Every gate a change must pass. The same commands run locally via `npm run check`.
+# Every gate a change must pass. The same commands run locally via `npm run check`. CI adds
+# what a local hook cannot: a clean `npm ci`, tests against a real Postgres, and diff coverage
+# against the PR's target branch. Checks that change when someone else publishes (vulnerabilities,
+# licences) run weekly instead — see dependency-audit.yml.
 name: CI
 
 on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -17,6 +21,7 @@ jobs:
   quality:
     name: Format, lint, types, dead code
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       # Actions are pinned to commit SHAs so a moved tag can't change what runs.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -26,15 +31,25 @@ jobs:
           cache: npm
       # Also builds packages/shared (prepare script), which the API and the type checker consume.
       - run: npm ci
-      - run: npm run format:check
+      # Each check runs even if an earlier one failed, so one push reports every problem.
+      - name: Format
+        if: ${{ !cancelled() }}
+        run: npm run format:check
       # Includes the architecture rules: layer boundaries, module public APIs, no import cycles.
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm run knip
+      - name: Lint
+        if: ${{ !cancelled() }}
+        run: npm run lint
+      - name: Typecheck
+        if: ${{ !cancelled() }}
+        run: npm run typecheck
+      - name: Dead code and unused dependencies
+        if: ${{ !cancelled() }}
+        run: npm run knip
 
   test:
-    name: Tests
+    name: Tests and diff coverage
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:16-alpine
@@ -53,16 +68,25 @@ jobs:
       TEST_DATABASE_URL: postgres://olive:olive@localhost:5432/olive_test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history: diff coverage needs a merge-base with the PR's target branch.
+          fetch-depth: 0
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm test
+      - name: Tests (with coverage)
+        run: npm run test:coverage && npm run test -w @sparshtomar/olive-shared
+      # Were the lines THIS PR changed covered? Per-diff, 70%. See scripts/check-coverage.mjs.
+      - name: Diff coverage
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+        run: npm run check:coverage -- --base origin/${{ github.base_ref }}
 
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
