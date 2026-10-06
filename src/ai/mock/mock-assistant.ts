@@ -7,25 +7,35 @@ import type { AssistantInput, HealthAssistant } from '../types';
  */
 export class MockHealthAssistant implements HealthAssistant {
   async reply({ context, text, image, history }: AssistantInput): Promise<string> {
-    const flagged = context
-      .split('\n')
-      .filter((line) => /\b(high|low)\b/i.test(line) && /mg\/dL|%|ng\/mL|g\/dL|mIU\/L/.test(line))
+    const flagged = [
+      ...context.matchAll(/^- (.+?): ([\d.]+ \S+) on \S+, healthy ([^,]+), status (HIGH|LOW)\.(?: Tip: ([^\n]+))?/gm),
+    ]
       .slice(0, 2)
-      .map((line) => line.replace(/^\s*[-•]\s*/, '').trim());
-    const target = /Daily targets?:\s*([^\n]+)/i.exec(context)?.[1]?.trim();
+      .map(([, name, value, range, status, tip]) => ({
+        name: name!,
+        value: value!,
+        range: range!,
+        status: status!.toLowerCase(),
+        tip,
+      }));
+    const target = /^Daily targets: ([^\n]+)\.$/m.exec(context)?.[1];
 
     const parts: string[] = [];
-    if (image) parts.push("I had a look at the photo you shared — it's a meal with a mix of carbs and protein.");
-    if (history.length === 0) parts.push(`Good question about "${text.slice(0, 60)}".`);
-    if (flagged.length)
+    if (image)
+      parts.push('I had a look at your photo — it reads as a home-style plate with a good mix of carbs and protein.');
+    if (history.length === 0 && text) parts.push(`On "${text.slice(0, 60)}": here's what your own numbers say.`);
+    if (flagged.length) {
       parts.push(
-        `From your reports, the things worth watching are: ${flagged.join('; ')}.`,
         '',
-        ...flagged.map((f) => `• ${f.split(':')[0]}: keep an eye on saturated fat and added sugar this week.`),
+        ...flagged.map(
+          (m) => `• **${m.name}** is ${m.status} at ${m.value} (healthy ${m.range}).${m.tip ? ` ${m.tip}` : ''}`,
+        ),
       );
-    else parts.push('Your tracked markers are in range, so this is about staying consistent.');
-    if (target) parts.push('', `Your daily target is ${target}.`);
-    parts.push('', "I'm not a doctor — for anything that worries you, talk to yours.");
-    return parts.join('\n');
+    } else {
+      parts.push('Your tracked markers are in range, so this is about staying consistent.');
+    }
+    if (target) parts.push('', `Today's budget is ${target}.`);
+    if (history.length === 0) parts.push('', "I'm not a doctor — for anything that worries you, talk to yours.");
+    return parts.join('\n').trim();
   }
 }
